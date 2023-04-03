@@ -1,6 +1,7 @@
 import { SetStateAction, useContext } from "react";
 import { Navigate } from "react-router-dom";
 import ModalCreateContact from "../../components/ModalCreateContact";
+import ModalDeleteContact from "../../components/ModalDeleteContact";
 import ModalUpdateContact from "../../components/ModalUpdateContact";
 import ModalUpdateUser from "../../components/ModalUpdateUser";
 import { ContactContext } from "../../contexts/contact.context";
@@ -16,9 +17,11 @@ const DashBoard = () => {
     modalCreateContact,
     modalUpdateContact,
     modalUpdateUser,
+    modalDeleteContact,
     setModalUpdateUser,
     setModalUpdateContact,
     setModalCreateContact,
+    setModalDeleteContact,
     setContact,
   } = useContext(ContactContext);
 
@@ -30,8 +33,12 @@ const DashBoard = () => {
 
   const openUpdateModal = (contact: IContact) => {
     setContact(contact);
-    console.log(contact);
     setModalUpdateContact(true);
+  };
+
+  const openDeleteModal = (contact: IContact) => {
+    setContact(contact);
+    setModalDeleteContact(true);
   };
 
   if (isLoading) {
@@ -83,7 +90,9 @@ const DashBoard = () => {
                       .reverse()
                       .join("/")}
                   </p>
-                  <button>Deletar contato</button>
+                  <button onClick={() => openDeleteModal(contact)}>
+                    Deletar contato
+                  </button>
                   <button onClick={() => openUpdateModal(contact)}>
                     Editar contato
                   </button>
@@ -94,6 +103,7 @@ const DashBoard = () => {
           {modalUpdateUser && <ModalUpdateUser closeModal={closeModal} />}
           {modalCreateContact && <ModalCreateContact closeModal={closeModal} />}
           {modalUpdateContact && <ModalUpdateContact closeModal={closeModal} />}
+          {modalDeleteContact && <ModalDeleteContact />}
         </>
       ) : (
         <Navigate to="/" />
