@@ -4,7 +4,7 @@ import ModalCreateContact from "../../components/ModalCreateContact";
 import ModalUpdateContact from "../../components/ModalUpdateContact";
 import ModalUpdateUser from "../../components/ModalUpdateUser";
 import { ContactContext } from "../../contexts/contact.context";
-import { UserContext } from "../../contexts/user.context";
+import { IContact, UserContext } from "../../contexts/user.context";
 
 export interface IModalProps {
   closeModal(setModal: React.Dispatch<SetStateAction<boolean>>): void;
@@ -17,12 +17,20 @@ const DashBoard = () => {
     modalUpdateContact,
     modalUpdateUser,
     setModalUpdateUser,
+    setModalUpdateContact,
+    setContact,
   } = useContext(ContactContext);
 
   const logout = () => {
     window.localStorage.removeItem("@KAuuid");
     window.localStorage.removeItem("@KAtoken");
     navigate("/");
+  };
+
+  const openUpdateModal = (contact: IContact) => {
+    setContact(contact);
+    console.log(contact);
+    setModalUpdateContact(true);
   };
 
   if (isLoading) {
@@ -71,7 +79,9 @@ const DashBoard = () => {
                       .join("/")}
                   </p>
                   <button>Deletar contato</button>
-                  <button>Editar contato</button>
+                  <button onClick={() => openUpdateModal(contact)}>
+                    Editar contato
+                  </button>
                 </li>
               );
             })}

@@ -16,25 +16,32 @@ export interface IUserUpdate {
   confirmPassword?: string | null;
 }
 
+//função recursiva para excluir chaves vazias do objeto
+export const formatedDataforRequest = (obj: IUserUpdate) => {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([_, v]) => {
+      if (typeof v === "object" && v) {
+        v = formatedDataforRequest(v);
+      }
+      return v;
+    })
+  );
+};
+
 const ModalUpdateUser = ({ closeModal }: IModalProps) => {
   const { setModalUpdateUser } = useContext(ContactContext);
   const { setUser } = useContext(UserContext);
   const [disable, setDisable] = useState(false);
 
-  //função recursiva para excluir chaves vazias do objeto
-  const formatedDataforRequest = (obj: IUserUpdate) => {
-    return Object.fromEntries(
-      Object.entries(obj).filter(([_, v]) => {
-        if (typeof v === "object" && v) {
-          v = formatedDataforRequest(v);
-        }
-        return v;
-      })
-    );
-  };
-
-  const callUpdate = async (data: IUserUpdate) => {
-    const updateData = formatedDataforRequest(data);
+  const callUpdateUser = async (data: IUserUpdate) => {
+    let updateData = formatedDataforRequest(data);
+    if (data.newPhone) {
+      const phone = parseInt(data.newPhone.replace(/[()\-\s]/g, ""));
+      updateData = {
+        ...updateData,
+        phone: phone,
+      };
+    }
     try {
       setDisable(true);
       const id = window.localStorage.getItem("@KAuuid");
@@ -66,7 +73,7 @@ const ModalUpdateUser = ({ closeModal }: IModalProps) => {
       <h2>Editar Dados do Usuario</h2>
       <button onClick={() => setModalUpdateUser(false)}>X</button>
       <div>
-        <form onSubmit={handleSubmit(callUpdate)}>
+        <form onSubmit={handleSubmit(callUpdateUser)}>
           <div>
             <label htmlFor="email">E-mail</label>
             <input

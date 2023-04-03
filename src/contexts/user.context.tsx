@@ -62,7 +62,7 @@ export interface IProvidersProps {
 
 interface IUserProvider {
   user: IUser | null;
-  contactsList: IContact[] | null;
+  contactsList: IContact[];
   isLoading: boolean;
   login(
     dataReq: ILogin,
@@ -74,13 +74,14 @@ interface IUserProvider {
   ): Promise<void>;
   navigate: IUseNavigate;
   setUser: React.Dispatch<SetStateAction<IUser | null>>;
+  setContactsList: React.Dispatch<SetStateAction<IContact[]>>;
 }
 
 export const UserContext = createContext<IUserProvider>({} as IUserProvider);
 
 const UserProvider = ({ children }: IProvidersProps) => {
   const [user, setUser] = useState<IUser | null>(null);
-  const [contactsList, setContactsList] = useState<IContact[] | null>(null);
+  const [contactsList, setContactsList] = useState<IContact[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -177,6 +178,7 @@ const UserProvider = ({ children }: IProvidersProps) => {
         registerUser,
         navigate,
         setUser,
+        setContactsList,
       }}
     >
       {children}
