@@ -1,16 +1,17 @@
 import { useContext, useState } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
-import { registerSchema } from "../../services/schemas/register.schema";
+import { registerSchema } from "../../services/schemas/user.schema";
 import { Link } from "react-router-dom";
 import InputMask from "react-input-mask";
 import { IRegister, UserContext } from "../../contexts/user.context";
 
-interface IRegisterMasked {
+export interface IRegisterMasked {
   name: string;
   email: string;
   phone: string;
   password: string;
+  confirmPassword: string;
 }
 
 const Register = () => {
@@ -87,6 +88,17 @@ const Register = () => {
             />
           </div>
           <p>{errors.password?.message}</p>
+        </div>
+
+        <div>
+          <label htmlFor="confirmPassword">Confirmar Senha</label>
+          <input
+            id="confirmPassword"
+            type="password"
+            placeholder="Digite sua senha novamente"
+            {...register("confirmPassword")}
+          />
+          <p>{errors.confirmPassword?.message}</p>
         </div>
 
         <button type="submit" disabled={disable}>

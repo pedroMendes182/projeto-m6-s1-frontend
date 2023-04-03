@@ -73,6 +73,7 @@ interface IUserProvider {
     setDisable: React.Dispatch<SetStateAction<boolean>>
   ): Promise<void>;
   navigate: IUseNavigate;
+  setUser: React.Dispatch<SetStateAction<IUser | null>>;
 }
 
 export const UserContext = createContext<IUserProvider>({} as IUserProvider);
@@ -100,6 +101,7 @@ const UserProvider = ({ children }: IProvidersProps) => {
           setContactsList(data.user.contacts);
         } catch (error) {
           console.error(error);
+          window.localStorage.clear();
         } finally {
           setIsLoading(false);
         }
@@ -167,7 +169,15 @@ const UserProvider = ({ children }: IProvidersProps) => {
 
   return (
     <UserContext.Provider
-      value={{ user, contactsList, isLoading, login, registerUser, navigate }}
+      value={{
+        user,
+        contactsList,
+        isLoading,
+        login,
+        registerUser,
+        navigate,
+        setUser,
+      }}
     >
       {children}
     </UserContext.Provider>

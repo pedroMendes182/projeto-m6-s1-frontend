@@ -1,12 +1,23 @@
-import { SetStateAction, useContext, useState } from "react";
+import { SetStateAction, useContext } from "react";
 import { Navigate } from "react-router-dom";
+import ModalCreateContact from "../../components/ModalCreateContact";
+import ModalUpdateContact from "../../components/ModalUpdateContact";
+import ModalUpdateUser from "../../components/ModalUpdateUser";
+import { ContactContext } from "../../contexts/contact.context";
 import { UserContext } from "../../contexts/user.context";
+
+export interface IModalProps {
+  closeModal(setModal: React.Dispatch<SetStateAction<boolean>>): void;
+}
 
 const DashBoard = () => {
   const { isLoading, navigate, user, contactsList } = useContext(UserContext);
-  const [modalUpdateUser, setModalUpdateUser] = useState(false);
-  const [modalCreateContact, setModalCreateContact] = useState(false);
-  const [modalUpdateContact, setModalUpdateContact] = useState(false);
+  const {
+    modalCreateContact,
+    modalUpdateContact,
+    modalUpdateUser,
+    setModalUpdateUser,
+  } = useContext(ContactContext);
 
   const logout = () => {
     window.localStorage.removeItem("@KAuuid");
@@ -37,7 +48,9 @@ const DashBoard = () => {
               {(user.createdAt + "").slice(0, 9).split("-").reverse().join("/")}
             </p>
             <button>Deletar perfil</button>
-            <button>Editar perfil</button>
+            <button onClick={() => setModalUpdateUser(true)}>
+              Editar perfil
+            </button>
           </div>
 
           <h2>Contatos</h2>
@@ -63,6 +76,9 @@ const DashBoard = () => {
               );
             })}
           </ul>
+          {modalUpdateUser && <ModalUpdateUser closeModal={closeModal} />}
+          {modalCreateContact && <ModalCreateContact closeModal={closeModal} />}
+          {modalUpdateContact && <ModalUpdateContact closeModal={closeModal} />}
         </>
       ) : (
         <Navigate to="/" />
