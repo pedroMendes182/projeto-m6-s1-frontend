@@ -3,9 +3,6 @@ import { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import InputMask from "react-input-mask";
 import { ContactContext } from "../../contexts/contact.context";
-import { UserContext } from "../../contexts/user.context";
-import { IModalProps } from "../../pages/Dashboard";
-import { instace } from "../../services/api";
 import { createContactSchema } from "../../services/schemas/contact.schema";
 
 export interface IContactRequest {
@@ -14,32 +11,12 @@ export interface IContactRequest {
   phone: string;
 }
 
-const ModalCreateContact = ({ closeModal }: IModalProps) => {
-  const { setContactsList, contactsList } = useContext(UserContext);
-  const { setModalCreateContact } = useContext(ContactContext);
+const ModalCreateContact = () => {
+  const { setModalCreateContact, createContact } = useContext(ContactContext);
   const [disable, setDisable] = useState(false);
 
   const callCreateContact = async (data: IContactRequest) => {
-    const phone = parseInt(data.phone.replace(/[()\-\s]/g, ""));
-    const createData = {
-      ...data,
-      phone: phone,
-    };
-    try {
-      setDisable(true);
-      const token = window.localStorage.getItem("@KAtoken");
-      const { data } = await instace.post("users/contacts", createData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setContactsList([...contactsList, data]);
-      setModalCreateContact(false);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setDisable(false);
-    }
+    createContact(data, setDisable);
   };
 
   const {

@@ -1,29 +1,12 @@
 import { useContext, useState } from "react";
 import { UserContext } from "../../contexts/user.context";
-import { instace } from "../../services/api";
 
 const ModalDeleteUser = () => {
-  const { setUser, setModalDeleteUser } = useContext(UserContext);
+  const { setModalDeleteUser, deleteUser } = useContext(UserContext);
   const [disable, setDisable] = useState(false);
 
   const callDeleteUser = async () => {
-    try {
-      setDisable(true);
-      const token = window.localStorage.getItem("@KAtoken");
-      const id = window.localStorage.getItem("@KAuuid");
-      await instace.delete(`users/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setUser(null);
-      setModalDeleteUser(false);
-      window.localStorage.clear();
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setDisable(false);
-    }
+    deleteUser(setDisable);
   };
 
   return (

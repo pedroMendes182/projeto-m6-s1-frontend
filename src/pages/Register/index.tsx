@@ -102,7 +102,7 @@ const Register = () => {
         </div>
 
         <button type="submit" disabled={disable}>
-          Cadastrar
+          {disable ? "Enviando..." : "Cadastrar"}
         </button>
       </form>
     </>
