@@ -64,6 +64,8 @@ interface IUserProvider {
   user: IUser | null;
   contactsList: IContact[];
   isLoading: boolean;
+  modalDeleteUser: boolean;
+  setModalDeleteUser: React.Dispatch<SetStateAction<boolean>>;
   login(
     dataReq: ILogin,
     setDisable: React.Dispatch<SetStateAction<boolean>>
@@ -83,6 +85,7 @@ const UserProvider = ({ children }: IProvidersProps) => {
   const [user, setUser] = useState<IUser | null>(null);
   const [contactsList, setContactsList] = useState<IContact[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [modalDeleteUser, setModalDeleteUser] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -179,6 +182,8 @@ const UserProvider = ({ children }: IProvidersProps) => {
         navigate,
         setUser,
         setContactsList,
+        modalDeleteUser,
+        setModalDeleteUser,
       }}
     >
       {children}

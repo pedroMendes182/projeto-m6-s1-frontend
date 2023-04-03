@@ -6,13 +6,21 @@ import ModalUpdateContact from "../../components/ModalUpdateContact";
 import ModalUpdateUser from "../../components/ModalUpdateUser";
 import { ContactContext } from "../../contexts/contact.context";
 import { IContact, UserContext } from "../../contexts/user.context";
+import ModalDeleteUser from "../../components/ModalDeleteUser";
 
 export interface IModalProps {
   closeModal(setModal: React.Dispatch<SetStateAction<boolean>>): void;
 }
 
 const DashBoard = () => {
-  const { isLoading, navigate, user, contactsList } = useContext(UserContext);
+  const {
+    isLoading,
+    navigate,
+    user,
+    contactsList,
+    modalDeleteUser,
+    setModalDeleteUser,
+  } = useContext(UserContext);
   const {
     modalCreateContact,
     modalUpdateContact,
@@ -63,7 +71,9 @@ const DashBoard = () => {
               Membro desde:{" "}
               {(user.createdAt + "").slice(0, 9).split("-").reverse().join("/")}
             </p>
-            <button>Deletar perfil</button>
+            <button onClick={() => setModalDeleteUser(true)}>
+              Deletar perfil
+            </button>
             <button onClick={() => setModalUpdateUser(true)}>
               Editar perfil
             </button>
@@ -104,6 +114,7 @@ const DashBoard = () => {
           {modalCreateContact && <ModalCreateContact closeModal={closeModal} />}
           {modalUpdateContact && <ModalUpdateContact closeModal={closeModal} />}
           {modalDeleteContact && <ModalDeleteContact />}
+          {modalDeleteUser && <ModalDeleteUser />}
         </>
       ) : (
         <Navigate to="/" />
