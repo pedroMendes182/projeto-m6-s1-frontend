@@ -6,6 +6,11 @@ import {
   useState,
 } from "react";
 import { To, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import {
+  formatedDataforRequest,
+  IUserUpdate,
+} from "../components/ModalUpdateUser";
 import { instace } from "../services/api";
 
 interface IUseNavigate {
@@ -65,13 +70,22 @@ interface IUserProvider {
   contactsList: IContact[];
   isLoading: boolean;
   modalDeleteUser: boolean;
+  modalUpdateUser: boolean;
   setModalDeleteUser: React.Dispatch<SetStateAction<boolean>>;
+  setModalUpdateUser: React.Dispatch<SetStateAction<boolean>>;
   login(
     dataReq: ILogin,
     setDisable: React.Dispatch<SetStateAction<boolean>>
   ): Promise<void>;
   registerUser(
     data: IRegister,
+    setDisable: React.Dispatch<SetStateAction<boolean>>
+  ): Promise<void>;
+  updateUser(
+    data: IUserUpdate,
+    setDisable: React.Dispatch<SetStateAction<boolean>>
+  ): Promise<void>;
+  deleteUser(
     setDisable: React.Dispatch<SetStateAction<boolean>>
   ): Promise<void>;
   navigate: IUseNavigate;
@@ -86,6 +100,7 @@ const UserProvider = ({ children }: IProvidersProps) => {
   const [contactsList, setContactsList] = useState<IContact[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [modalDeleteUser, setModalDeleteUser] = useState(false);
+  const [modalUpdateUser, setModalUpdateUser] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -146,10 +161,13 @@ const UserProvider = ({ children }: IProvidersProps) => {
       setUser(response.data.user);
       setContactsList(response.data.user.contacts);
       navigate("/dashboard");
-    } catch (error) {
+    } catch (error: any) {
       window.localStorage.clear();
-
-      console.log(error);
+      console.error(error);
+      toast.error("Email e/ou Senha incorreto!", {
+        autoClose: 3000,
+        theme: "dark",
+      });
     } finally {
       setDisable(false);
     }
@@ -163,9 +181,77 @@ const UserProvider = ({ children }: IProvidersProps) => {
       setDisable(true);
       await instace.post("users", data);
 
+      toast.success("Conta criada com sucesso!", {
+        autoClose: 3000,
+        theme: "dark",
+      });
       navigate("/");
     } catch (error: any) {
       console.error(error);
+      toast.error(error.response.data.message, {
+        autoClose: 3000,
+        theme: "dark",
+      });
+    } finally {
+      setDisable(false);
+    }
+  };
+
+  const updateUser = async (
+    data: IUserUpdate,
+    setDisable: React.Dispatch<SetStateAction<boolean>>
+  ) => {
+    let updateData = formatedDataforRequest(data);
+    if (data.newPhone) {
+      const phone = parseInt(data.newPhone.replace(/[()\-\s]/g, ""));
+      updateData = {
+        ...updateData,
+        phone: phone,
+      };
+    }
+    try {
+      setDisable(true);
+      const id = window.localStorage.getItem("@KAuuid");
+      const token = window.localStorage.getItem("@KAtoken");
+      const { data } = await instace.patch(`users/${id}`, updateData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setUser(data);
+      setModalUpdateUser(false);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setDisable(false);
+    }
+  };
+
+  const deleteUser = async (
+    setDisable: React.Dispatch<SetStateAction<boolean>>
+  ) => {
+    try {
+      setDisable(true);
+      const token = window.localStorage.getItem("@KAtoken");
+      const id = window.localStorage.getItem("@KAuuid");
+      await instace.delete(`users/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      toast.success("Conta deletada!", {
+        autoClose: 3000,
+        theme: "dark",
+      });
+      setUser(null);
+      setModalDeleteUser(false);
+      window.localStorage.clear();
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.response.data.message, {
+        autoClose: 3000,
+        theme: "dark",
+      });
     } finally {
       setDisable(false);
     }
@@ -184,6 +270,10 @@ const UserProvider = ({ children }: IProvidersProps) => {
         setContactsList,
         modalDeleteUser,
         setModalDeleteUser,
+        modalUpdateUser,
+        setModalUpdateUser,
+        updateUser,
+        deleteUser,
       }}
     >
       {children}

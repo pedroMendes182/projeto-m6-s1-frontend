@@ -1,4 +1,4 @@
-import { SetStateAction, useContext } from "react";
+import { useContext } from "react";
 import { Navigate } from "react-router-dom";
 import ModalCreateContact from "../../components/ModalCreateContact";
 import ModalDeleteContact from "../../components/ModalDeleteContact";
@@ -8,10 +8,6 @@ import { ContactContext } from "../../contexts/contact.context";
 import { IContact, UserContext } from "../../contexts/user.context";
 import ModalDeleteUser from "../../components/ModalDeleteUser";
 
-export interface IModalProps {
-  closeModal(setModal: React.Dispatch<SetStateAction<boolean>>): void;
-}
-
 const DashBoard = () => {
   const {
     isLoading,
@@ -19,14 +15,14 @@ const DashBoard = () => {
     user,
     contactsList,
     modalDeleteUser,
+    modalUpdateUser,
     setModalDeleteUser,
+    setModalUpdateUser,
   } = useContext(UserContext);
   const {
     modalCreateContact,
     modalUpdateContact,
-    modalUpdateUser,
     modalDeleteContact,
-    setModalUpdateUser,
     setModalUpdateContact,
     setModalCreateContact,
     setModalDeleteContact,
@@ -53,10 +49,6 @@ const DashBoard = () => {
     return <h1>Carregando...</h1>;
   }
 
-  const closeModal = (setModal: React.Dispatch<SetStateAction<boolean>>) => {
-    setModal(false);
-  };
-
   return (
     <>
       {user ? (
@@ -69,7 +61,11 @@ const DashBoard = () => {
             <p>Celular: {user.phone}</p>
             <p>
               Membro desde:{" "}
-              {(user.createdAt + "").slice(0, 9).split("-").reverse().join("/")}
+              {(user.createdAt + "")
+                .slice(0, 10)
+                .split("-")
+                .reverse()
+                .join("/")}
             </p>
             <button onClick={() => setModalDeleteUser(true)}>
               Deletar perfil
@@ -85,34 +81,38 @@ const DashBoard = () => {
             Criar novo contato
           </button>
 
-          <ul>
-            {contactsList?.map((contact) => {
-              return (
-                <li key={contact.id}>
-                  <p>Nome: {contact.name}</p>
-                  <p>E-mail: {contact.email}</p>
-                  <p>Celular: {contact.phone}</p>
-                  <p>
-                    Membro desde:{" "}
-                    {(contact.createdAt + "")
-                      .slice(0, 9)
-                      .split("-")
-                      .reverse()
-                      .join("/")}
-                  </p>
-                  <button onClick={() => openDeleteModal(contact)}>
-                    Deletar contato
-                  </button>
-                  <button onClick={() => openUpdateModal(contact)}>
-                    Editar contato
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-          {modalUpdateUser && <ModalUpdateUser closeModal={closeModal} />}
-          {modalCreateContact && <ModalCreateContact closeModal={closeModal} />}
-          {modalUpdateContact && <ModalUpdateContact closeModal={closeModal} />}
+          {contactsList.length ? (
+            <ul>
+              {contactsList.map((contact) => {
+                return (
+                  <li key={contact.id}>
+                    <p>Nome: {contact.name}</p>
+                    <p>E-mail: {contact.email}</p>
+                    <p>Celular: {contact.phone}</p>
+                    <p>
+                      Membro desde:{" "}
+                      {(contact.createdAt + "")
+                        .slice(0, 10)
+                        .split("-")
+                        .reverse()
+                        .join("/")}
+                    </p>
+                    <button onClick={() => openDeleteModal(contact)}>
+                      Deletar contato
+                    </button>
+                    <button onClick={() => openUpdateModal(contact)}>
+                      Editar contato
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            <p>Sem contatos</p>
+          )}
+          {modalUpdateUser && <ModalUpdateUser />}
+          {modalCreateContact && <ModalCreateContact />}
+          {modalUpdateContact && <ModalUpdateContact />}
           {modalDeleteContact && <ModalDeleteContact />}
           {modalDeleteUser && <ModalDeleteUser />}
         </>

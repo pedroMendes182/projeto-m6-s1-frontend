@@ -56,7 +56,7 @@ const HomePage = () => {
         </div>
 
         <button type="submit" disabled={disable}>
-          Entrar
+          {disable ? "Carregando..." : "Entrar"}
         </button>
       </form>
 
