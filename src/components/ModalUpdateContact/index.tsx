@@ -1,13 +1,9 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { IModalProps } from "../../pages/Dashboard";
 import { useForm } from "react-hook-form";
 import { updateContactSchema } from "../../services/schemas/contact.schema";
 import { useContext, useState } from "react";
 import { ContactContext } from "../../contexts/contact.context";
 import InputMask from "react-input-mask";
-import { formatedDataforRequest } from "../ModalUpdateUser";
-import { UserContext } from "../../contexts/user.context";
-import { instace } from "../../services/api";
 
 export interface IContactUpdate {
   name?: string | null;
@@ -15,46 +11,13 @@ export interface IContactUpdate {
   newPhone?: string | null;
 }
 
-const ModalUpdateContact = ({ closeModal }: IModalProps) => {
-  const { setModalUpdateContact, contact, setContact } =
+const ModalUpdateContact = () => {
+  const { setModalUpdateContact, contact, updateContact } =
     useContext(ContactContext);
-  const { setContactsList, contactsList } = useContext(UserContext);
   const [disable, setDisable] = useState(false);
 
   const callUpdateContact = async (data: IContactUpdate) => {
-    let updateData = formatedDataforRequest(data);
-    if (data.newPhone) {
-      const phone = parseInt(data.newPhone.replace(/[()\-\s]/g, ""));
-      updateData = {
-        ...updateData,
-        phone: phone,
-      };
-    }
-    try {
-      setDisable(true);
-      const token = window.localStorage.getItem("@KAtoken");
-      const { data } = await instace.patch(
-        `users/contacts/${contact?.id}`,
-        updateData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      const newContactsList = contactsList.filter(
-        (ctc) => ctc.id !== contact?.id
-      );
-
-      setContactsList([...newContactsList, data]);
-      setContact(null);
-      setModalUpdateContact(false);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setDisable(false);
-    }
+    updateContact(data, setDisable);
   };
 
   const {

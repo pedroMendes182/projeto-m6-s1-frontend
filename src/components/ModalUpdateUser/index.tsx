@@ -1,11 +1,8 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import { useContext, useState } from "react";
-import { ContactContext } from "../../contexts/contact.context";
-import { IModalProps } from "../../pages/Dashboard";
 import { updateUserSchema } from "../../services/schemas/user.schema";
 import InputMask from "react-input-mask";
-import { instace } from "../../services/api";
 import { UserContext } from "../../contexts/user.context";
 
 export interface IUserUpdate {
@@ -28,36 +25,12 @@ export const formatedDataforRequest = (obj: IUserUpdate) => {
   );
 };
 
-const ModalUpdateUser = ({ closeModal }: IModalProps) => {
-  const { setModalUpdateUser } = useContext(ContactContext);
-  const { setUser } = useContext(UserContext);
+const ModalUpdateUser = () => {
+  const { setModalUpdateUser, updateUser } = useContext(UserContext);
   const [disable, setDisable] = useState(false);
 
   const callUpdateUser = async (data: IUserUpdate) => {
-    let updateData = formatedDataforRequest(data);
-    if (data.newPhone) {
-      const phone = parseInt(data.newPhone.replace(/[()\-\s]/g, ""));
-      updateData = {
-        ...updateData,
-        phone: phone,
-      };
-    }
-    try {
-      setDisable(true);
-      const id = window.localStorage.getItem("@KAuuid");
-      const token = window.localStorage.getItem("@KAtoken");
-      const { data } = await instace.patch(`users/${id}`, updateData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setUser(data);
-      setModalUpdateUser(false);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setDisable(false);
-    }
+    updateUser(data, setDisable);
   };
 
   const {
@@ -92,7 +65,7 @@ const ModalUpdateUser = ({ closeModal }: IModalProps) => {
               id="name"
               type="name"
               defaultValue=""
-              placeholder="Digite seu celular..."
+              placeholder="Digite seu nome..."
               {...register("name")}
             />
             <p>{errors.name?.message}</p>
@@ -104,7 +77,7 @@ const ModalUpdateUser = ({ closeModal }: IModalProps) => {
               id="phone"
               mask="(99) 99999-9999"
               defaultValue=""
-              placeholder="digite seu celular..."
+              placeholder="Digite seu celular..."
               {...register("newPhone")}
             />
             <p>{errors.newPhone?.message}</p>
@@ -137,7 +110,7 @@ const ModalUpdateUser = ({ closeModal }: IModalProps) => {
           </div>
 
           <button type="submit" disabled={disable}>
-            Atualizar
+            {disable ? "Atualizando..." : "Atualizar"}
           </button>
         </form>
       </div>
