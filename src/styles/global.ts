@@ -28,7 +28,7 @@ const GlobalStyle = createGlobalStyle`
     }
 
     body {
-        background-color: var(--grey-4);
+        background-color: var(--grey-0);
     }
 
     button {
