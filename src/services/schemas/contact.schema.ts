@@ -13,3 +13,12 @@ export const updateContactSchema = yup.object().shape({
         .matches(/\(\d{2}\)\s\d{5}-\d{4}/, "número de celular inválido"),
     }),
 });
+
+export const createContactSchema = yup.object().shape({
+  name: yup.string().required(),
+  email: yup.string().required().email("digite um e-mail valido"),
+  phone: yup
+    .string()
+    .required()
+    .matches(/\(\d{2}\)\s\d{5}-\d{4}/, "número de celular inválido"),
+});

@@ -18,6 +18,7 @@ const DashBoard = () => {
     modalUpdateUser,
     setModalUpdateUser,
     setModalUpdateContact,
+    setModalCreateContact,
     setContact,
   } = useContext(ContactContext);
 
@@ -62,6 +63,10 @@ const DashBoard = () => {
           </div>
 
           <h2>Contatos</h2>
+
+          <button onClick={() => setModalCreateContact(true)}>
+            Criar novo contato
+          </button>
 
           <ul>
             {contactsList?.map((contact) => {
